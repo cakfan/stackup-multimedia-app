@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+# New Feature
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+I added social media sharing buttons and added a new file feature to this project. The reason is, this feature is very useful for Multimedia Applications. We can add a new file and then share it on our social media, I think is pretty cool.
 
-## Available Scripts
+## Social Media Share Button
 
-In the project directory, you can run:
+You can share file into social media.
 
-### `npm start`
+* Select the file that you want to share.
+* Click on the social media button in the preview section. There are 4 options to share your file (Facebook, Twitter, WhatsApp, or Telegram).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Code work:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+I'm using `react-share` library to add a share button in this project. I add this feature at the bottom of the preview file section.
 
-### `npm test`
+```javascript
+<div style={styles.btnShare}>
+    <FacebookShareButton url={window.location.href + selectedFile.path.substring(1)} quote={selectedFile.name}>
+    <FacebookIcon size={24} round={true} />
+    </FacebookShareButton>
+    <TwitterShareButton url={window.location.href + selectedFile.path.substring(1)} title={selectedFile.name}>
+    <TwitterIcon size={24} round={true} />
+    </TwitterShareButton>
+    <WhatsappShareButton url={window.location.href + selectedFile.path.substring(1)} title={selectedFile.name}>
+    <WhatsappIcon size={24} round={true} />
+    </WhatsappShareButton>
+    <TelegramShareButton url={window.location.href + selectedFile.path.substring(1)} title={selectedFile.name}>
+    <TelegramIcon size={24} round={true} />
+    </TelegramShareButton>
+</div>
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Add New File
 
-### `npm run build`
+You can add a new file with a maximum size of 5 MB.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* To add a new file you can click `Add File` button.
+* Then select the file that you want to upload.
+* And now your file will appear in the last item in the list.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> This is just a temporary file, when you refresh the page it will disappear.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Code work:
 
-### `npm run eject`
+After selecting the file to be added, the system will ensure the file size is not more than 5 MB. If the file size is more than 5 MB, a message will appear that the file is too large. And if the file size is less than 5 MB then the file will be added to the file list.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```javascript
+const handleNewFile = (event) => {
+    if (event.target.files[0].size / 1024 <= 5120) {
+        const reader = new FileReader()
+        const file = event.target.files[0]
+        const type = file.type.split('/')[0]
+        const name = file.name.split('.')[0] + ' (NEW)'
+        reader.readAsDataURL(file)
+        reader.addEventListener("load", () => {
+        if (reader.result) {
+            const newFile = {
+            id: currentId + 1,
+            name,
+            type,
+            path: reader.result
+            }
+            currentId += 1
+            const newArray = [...myFiles, newFile]
+            setMyFiles(newArray)
+        } else {
+            alert("Ooops, something went wrong")
+        }
+        })
+    } else {
+        alert("File size is too large " + event.target.files[0].size / 1024)
+    }
+}
+```

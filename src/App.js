@@ -66,7 +66,6 @@ export default function App() {
           currentId += 1
           const newArray = [...myFiles, newFile]
           setMyFiles(newArray)
-          console.log('file size', type)
         } else {
           alert("Ooops, something went wrong")
         }
